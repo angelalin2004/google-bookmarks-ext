@@ -1,16 +1,9 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
+// Run our kitten generation script as soon as the document's DOM is ready.
+document.addEventListener('DOMContentLoaded', function () {
+  googleBookmarks.requestBookmarks();
+});
 
-/**
- * Global variable containing the query we'd like to pass to Flickr. In this
- * case, kittens!
- *
- * @type {string}
- */
-var QUERY = 'baby giant pandas';
-
-var kittenGenerator = {
+var googleBookmarks = {
   /**
    * Flickr URL that will give us lots and lots of whatever we're looking for.
    *
@@ -21,65 +14,48 @@ var kittenGenerator = {
    * @private
    */
    
-  searchOnFlickr_: 'https://secure.flickr.com/services/rest/?' +
-      'method=flickr.photos.search&' +
-      'api_key=e66804b96a24f03638237ee091af9245&' +
-      'text=' + encodeURIComponent(QUERY) + '&' +
-      'safe_search=1&' +
-      'content_type=1&' +
-      'sort=interestingness-desc&' +
-      'per_page=20',
+  getBookmarks_: 'https://www.google.com/bookmarks/find?q=&output=rss&num=10000',
   
 
   /**
-   * Sends an XHR GET request to grab photos of lots and lots of kittens. The
-   * XHR's 'onload' event is hooks up to the 'showPhotos_' method.
+   * Sends an XHR GET request to grab up to 10000 Google Bookmarks. The
+   * XHR's 'onload' event is hooks up to the 'showInfo_' method.
    *
    * @public
    */
-  requestKittens: function() {
+  requestBookmarks: function() {
     var req = new XMLHttpRequest();
-    req.open("GET", this.searchOnFlickr_, true);
-    req.onload = this.showPhotos_.bind(this);
+    req.open("GET", this.getBookmarks_, true);
+    req.onload = this.showInfo_.bind(this);
     req.send(null);
   },
 
   /**
-   * Handle the 'onload' event of our kitten XHR request, generated in
-   * 'requestKittens', by generating 'img' elements, and stuffing them into
-   * the document for display.
+   * Handle the 'onload' event of our XHR request, generated in
+   * 'requestBookmarks'.
    *
    * @param {ProgressEvent} e The XHR ProgressEvent.
    * @private
    */
-  showPhotos_: function (e) {
-    var kittens = e.target.responseXML.querySelectorAll('photo');
-    for (var i = 0; i < kittens.length; i++) {
-      var img = document.createElement('img');
-      img.src = this.constructKittenURL_(kittens[i]);
-      img.setAttribute('alt', kittens[i].getAttribute('title'));
-      document.body.appendChild(img);
+  showInfo_: function (e) {
+    var items = e.target.responseXML.querySelectorAll('item');
+    for (var i = 0; i < items.length; i++) {
+      var para = document.createElement('P');
+      // img.setAttribute('alt', kittens[i].getAttribute('title'));
+	  /*
+	  var t = document.createTextNode(items[i].textContent);
+	  para.appendChild(t);
+      document.body.appendChild(para);
+	  */
+	  document.body.innerHTML += "<a href='" + items[i].childNodes[1].textContent + 
+								 "' >" + items[i].childNodes[0].textContent + "</a><br>";
     }
   },
-
-  /**
-   * Given a photo, construct a URL using the method outlined at
-   * http://www.flickr.com/services/api/misc.urlKittenl
-   *
-   * @param {DOMElement} A kitten.
-   * @return {string} The kitten's URL.
-   * @private
-   */
-  constructKittenURL_: function (photo) {
-    return "http://farm" + photo.getAttribute("farm") +
-        ".static.flickr.com/" + photo.getAttribute("server") +
-        "/" + photo.getAttribute("id") +
-        "_" + photo.getAttribute("secret") +
-        "_s.jpg";
-  }
+  
+  /*
+  myFunction_: function(string) {
+	chrome.tabs.create({url : string}, function(tab);
+  },
+  */
+  
 };
-
-// Run our kitten generation script as soon as the document's DOM is ready.
-document.addEventListener('DOMContentLoaded', function () {
-  kittenGenerator.requestKittens();
-});
