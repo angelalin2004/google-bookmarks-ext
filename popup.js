@@ -1,14 +1,6 @@
-// Run our kitten generation script as soon as the document's DOM is ready.
-document.addEventListener('DOMContentLoaded', function () {
-  googleBookmarks.requestBookmarks();
-});
-
 var googleBookmarks = {
   /**
-   * Flickr URL that will give us lots and lots of whatever we're looking for.
-   *
-   * See http://www.flickr.com/services/api/flickr.photos.search.html for
-   * details about the construction of this URL.
+   * URL that will gives up to 10000 bookmarks.
    *
    * @type {string}
    * @private
@@ -24,10 +16,10 @@ var googleBookmarks = {
    * @public
    */
   requestBookmarks: function() {
-    var req = new XMLHttpRequest();
-    req.open("GET", this.getBookmarks_, true);
-    req.onload = this.showInfo_.bind(this);
-    req.send(null);
+	var req = new XMLHttpRequest();
+	req.open("GET", this.getBookmarks_, true);
+	req.onload = this.showInfo_.bind(this);
+	req.send(null);
   },
 
   /**
@@ -40,37 +32,45 @@ var googleBookmarks = {
   showInfo_: function (e) {
     var items = e.target.responseXML.querySelectorAll('item');
 	var labels = [];
-	var tag_elements;
+	var unlabeled = [];
+	var label_elements;
     for (var i = 0; i < items.length; i++) {
-	  /* if there's nothing in the array, simply insert in */
-	  //if ( labels.length == 0 )
-		// labels[labels.length] = [items[i].getElementsByTagName("smh:bkmk_label")[0].textContent];
-	  /* otherwise we search the labels to see if it has already been inserted */
-	  /*
-	  else {
-		for ( var j = 0; j < labels.length; j++ ) {
-			if ( labels[j][0] == items[i].childNodes[10].textContent ) {
-			
-			}
-		}
-	  }
-	  */   
 	  /*
 	  document.body.innerHTML += "<a href='" + items[i].childNodes[1].textContent + 
 								 "' >" + items[i].childNodes[0].textContent + "</a><br>"; 
 	  */
-
-	  tag_elements = items[i].getElementsByTagName("bkmk_label");
-	  if ( tag_elements.length > 0 ) {
-		document.body.innerHTML += tag_elements[0].textContent + "<br";
-	  }
+	  label_elements = items[i].getElementsByTagName("bkmk_label");
 	  
+	  /* bookmark has a label */
+	  if ( label_elements.length > 0 ) {
+	    /* just insert if array is empty */
+		if ( labels.length == 0 ) {
+		  labels[labels.length] = [label_elements[0].textContent, [items[i]]];
+		}
+		/* otherwise we search the labels to see if it has already been inserted */
+		else {
+		  var inserted = false;
+		  for ( var j = 0; j < labels.length; j++ ) {
+			if ( labels[j][0] == label_elements[0].textContent ) {
+              labels[j][1][labels[j][1].length] = items[i];
+		      inserted = true;
+			}
+		  }
+		  if ( !inserted ) {
+		    labels[labels.length] = [label_elements[0].textContent, [items[i]]];
+		  }
+		}
+	  }  
+
+	  /* bookmark is unlabeled */
+	  else
+		unlabeled[unlabeled.length] = items[i];
     }
-	/*
-	for ( var j = 0; j < labels.length; j++ ) {
-		document.body.innerHTML += labels[j][0] + "<br";
+	
+	for ( var k = 0; k < labels.length; k++ ) {
+		document.body.innerHTML += labels[k][0] + "<br>";
 	}
-	*/
+	
   },
   
   /*
@@ -80,3 +80,8 @@ var googleBookmarks = {
   */
   
 };
+
+// Run script as soon as the document's DOM is ready.
+document.addEventListener('DOMContentLoaded', function () {
+  googleBookmarks.requestBookmarks();
+});
