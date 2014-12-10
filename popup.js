@@ -40,6 +40,7 @@ var googleBookmarks = {
   showInfo_: function (e) {
     var items = e.target.responseXML.querySelectorAll('item');
 	var labels = [];
+	var tag_elements;
     for (var i = 0; i < items.length; i++) {
 	  /* if there's nothing in the array, simply insert in */
 	  //if ( labels.length == 0 )
@@ -53,15 +54,16 @@ var googleBookmarks = {
 			}
 		}
 	  }
-	  */  
-	  
-      // img.setAttribute('alt', kittens[i].getAttribute('title'));
-	  
-	  
+	  */   
+	  /*
 	  document.body.innerHTML += "<a href='" + items[i].childNodes[1].textContent + 
 								 "' >" + items[i].childNodes[0].textContent + "</a><br>"; 
-	  
-	  //document.body.innerHTML += items[i].getElementsByTagName("smh:bkmk_label")[0].textContent + "<br";
+	  */
+
+	  tag_elements = items[i].getElementsByTagName("bkmk_label");
+	  if ( tag_elements.length > 0 ) {
+		document.body.innerHTML += tag_elements[0].textContent + "<br";
+	  }
 	  
     }
 	/*
