@@ -39,17 +39,36 @@ var googleBookmarks = {
    */
   showInfo_: function (e) {
     var items = e.target.responseXML.querySelectorAll('item');
+	var labels = [];
     for (var i = 0; i < items.length; i++) {
-      var para = document.createElement('P');
-      // img.setAttribute('alt', kittens[i].getAttribute('title'));
+	  /* if there's nothing in the array, simply insert in */
+	  //if ( labels.length == 0 )
+		// labels[labels.length] = [items[i].getElementsByTagName("smh:bkmk_label")[0].textContent];
+	  /* otherwise we search the labels to see if it has already been inserted */
 	  /*
-	  var t = document.createTextNode(items[i].textContent);
-	  para.appendChild(t);
-      document.body.appendChild(para);
-	  */
+	  else {
+		for ( var j = 0; j < labels.length; j++ ) {
+			if ( labels[j][0] == items[i].childNodes[10].textContent ) {
+			
+			}
+		}
+	  }
+	  */  
+	  
+      // img.setAttribute('alt', kittens[i].getAttribute('title'));
+	  
+	  
 	  document.body.innerHTML += "<a href='" + items[i].childNodes[1].textContent + 
-								 "' >" + items[i].childNodes[0].textContent + "</a><br>";
+								 "' >" + items[i].childNodes[0].textContent + "</a><br>"; 
+	  
+	  //document.body.innerHTML += items[i].getElementsByTagName("smh:bkmk_label")[0].textContent + "<br";
+	  
     }
+	/*
+	for ( var j = 0; j < labels.length; j++ ) {
+		document.body.innerHTML += labels[j][0] + "<br";
+	}
+	*/
   },
   
   /*
