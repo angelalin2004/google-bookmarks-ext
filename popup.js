@@ -39,6 +39,8 @@ var googleBookmarks = {
 	  document.body.innerHTML += "<a href='" + items[i].childNodes[1].textContent + 
 								 "' >" + items[i].childNodes[0].textContent + "</a><br>"; 
 	  */
+	  
+	  /* sort bookmarks into array by label */
 	  label_elements = items[i].getElementsByTagName("bkmk_label");
 	  
 	  /* bookmark has a label */
@@ -67,15 +69,23 @@ var googleBookmarks = {
 		unlabeled[unlabeled.length] = items[i];
     }
 	
+	/* display labels with bookmarks hidden */
 	for ( var k = 0; k < labels.length; k++ ) {
-		document.body.innerHTML += labels[k][0] + "<br>";
+	  var para = '<div onmouseenter="showLinks(this)" onmouseleave="hideLinks(this.id)">' + 
+	               labels[k][0] + '</div>';
+	  var text = "<div id='" + k + "' style='display:none'>";
+	  for ( var m = 0; m < labels[k][1].length; m++ ) {
+	    text += labels[k][1][m].childNodes[0].textContent + "<br>";
+	  }
+	  text += "</div>";
+	  document.body.innerHTML += para + text;
 	}
 	
   },
   
   /*
   myFunction_: function(string) {
-	chrome.tabs.create({url : string}, function(tab);
+	// chrome.tabs.create({url : string}, function(tab));
   },
   */
   
@@ -85,3 +95,21 @@ var googleBookmarks = {
 document.addEventListener('DOMContentLoaded', function () {
   googleBookmarks.requestBookmarks();
 });
+
+$(document).ready(function(){
+  $("p").hover(function(){
+    $("p").css("background-color","yellow");
+    },function(){
+    $("p").css("background-color","pink");
+  });
+});
+
+function showLinks (x) {
+  document.body.innerHTML += "AAAAA<br>";
+  x.style.backgroundColor ="red";
+  // $("div#"+k).show();
+}
+
+function hideLinks (x) {
+  // $("div#"+k).hide();
+}
